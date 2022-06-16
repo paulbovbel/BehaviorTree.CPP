@@ -24,6 +24,7 @@ option(BUILD_UNIT_TESTS "Build the unit tests" ON)
 option(BUILD_TOOLS "Build commandline tools" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ENABLE_COROUTINES "Enable boost coroutines" ON)
+option(ENABLE_SQLITE_LOGGER "Build SQLite Logger" ON)
 
 #---- Include boost to add coroutines ----
 if(ENABLE_COROUTINES)
@@ -177,6 +178,13 @@ if(CURSES_FOUND)
 endif()
 
 
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/3rdparty/SQLiteCpp)
+
+if(ENABLE_SQLITE_LOGGER)
+    list(APPEND BT_SOURCE src/loggers/bt_sqlite_logger.cpp)
+    list(APPEND BEHAVIOR_TREE_PUBLIC_LIBRARIES SQLiteCpp)
+endif()
+
 ######################################################
 
 if (UNIX)
@@ -216,6 +224,7 @@ target_compile_definitions(${BEHAVIOR_TREE_LIBRARY} PRIVATE $<$<CONFIG:Debug>:TI
 
 target_include_directories(${BEHAVIOR_TREE_LIBRARY} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/SQLiteCpp/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
     ${BUILD_TOOL_INCLUDE_DIRS})

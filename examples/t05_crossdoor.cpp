@@ -3,6 +3,7 @@
 #include "behaviortree_cpp_v3/loggers/bt_cout_logger.h"
 #include "behaviortree_cpp_v3/loggers/bt_minitrace_logger.h"
 #include "behaviortree_cpp_v3/loggers/bt_file_logger.h"
+#include "behaviortree_cpp_v3/loggers/bt_sqlite_logger.h"
 #include "behaviortree_cpp_v3/bt_factory.h"
 
 #ifdef ZMQ_FOUND
@@ -75,6 +76,10 @@ int main(int argc, char** argv)
 
     // This logger stores the execution time of each node
     MinitraceLogger logger_minitrace(tree, "bt_trace.json");
+
+    // This logger stores information in a SQLite database
+    // Try using sqlitebrowser to see the result. https://sqlitebrowser.org/
+    SqliteLogger logger_sqlite(tree, "bt_trace.db3");
 
 #ifdef ZMQ_FOUND
     // This logger publish status changes using ZeroMQ. Used by Groot
