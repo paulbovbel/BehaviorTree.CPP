@@ -67,20 +67,18 @@ struct Timestamp
 }
 
 
-struct StatusChange 
+struct CurrentNodeStatus
 {
   uid         : uint16;
-  prev_status : NodeStatus;
   status      : NodeStatus;
-  timestamp   : Timestamp;
 }
 
-table StatusChangeLog
+table TreeStatus
 {
-    behavior_tree  : BehaviorTree;
-    state_changes  : [StatusChange];
+    timestamp : Timestamp;
+    node_status  : [CurrentNodeStatus];
 }
 
-root_type StatusChangeLog;
+root_type TreeStatus;
 
 root_type BehaviorTree;

@@ -159,6 +159,7 @@ list(APPEND BT_SOURCE
     src/controls/switch_node.cpp
     src/controls/while_do_else_node.cpp
 
+    src/loggers/bt_flatbuffer_helper.cpp
     src/loggers/bt_cout_logger.cpp
     src/loggers/bt_file_logger.cpp
     src/loggers/bt_minitrace_logger.cpp

@@ -4,47 +4,58 @@
 #ifndef FLATBUFFERS_GENERATED_BTLOGGER_SERIALIZATION_H_
 #define FLATBUFFERS_GENERATED_BTLOGGER_SERIALIZATION_H_
 
-#include "behaviortree_cpp_v3/flatbuffers/flatbuffers.h"
+#include "flatbuffers/flatbuffers.h"
+
+// Ensure the included flatbuffers.h is the same version as when this file was
+// generated, otherwise it may not be compatible.
+static_assert(FLATBUFFERS_VERSION_MAJOR == 2 &&
+              FLATBUFFERS_VERSION_MINOR == 0 &&
+              FLATBUFFERS_VERSION_REVISION == 6,
+             "Non-compatible flatbuffers version included");
 
 namespace Serialization {
 
 struct PortModel;
 struct PortModelBuilder;
+struct PortModelT;
 
 struct PortConfig;
 struct PortConfigBuilder;
+struct PortConfigT;
 
 struct TreeNode;
 struct TreeNodeBuilder;
+struct TreeNodeT;
 
 struct NodeModel;
 struct NodeModelBuilder;
+struct NodeModelT;
 
 struct BehaviorTree;
 struct BehaviorTreeBuilder;
+struct BehaviorTreeT;
 
 struct Timestamp;
 
-struct StatusChange;
+struct CurrentNodeStatus;
 
-struct StatusChangeLog;
-struct StatusChangeLogBuilder;
+struct TreeStatus;
+struct TreeStatusBuilder;
+struct TreeStatusT;
 
-enum class NodeStatus : int8_t {
+enum NodeStatus : int8_t {
   IDLE = 0,
   RUNNING = 1,
   SUCCESS = 2,
-  FAILURE = 3,
-  MIN = IDLE,
-  MAX = FAILURE
+  FAILURE = 3
 };
 
 inline const NodeStatus (&EnumValuesNodeStatus())[4] {
   static const NodeStatus values[] = {
-    NodeStatus::IDLE,
-    NodeStatus::RUNNING,
-    NodeStatus::SUCCESS,
-    NodeStatus::FAILURE
+    IDLE,
+    RUNNING,
+    SUCCESS,
+    FAILURE
   };
   return values;
 }
@@ -61,30 +72,28 @@ inline const char * const *EnumNamesNodeStatus() {
 }
 
 inline const char *EnumNameNodeStatus(NodeStatus e) {
-  if (flatbuffers::IsOutRange(e, NodeStatus::IDLE, NodeStatus::FAILURE)) return "";
+  if (flatbuffers::IsOutRange(e, IDLE, FAILURE)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesNodeStatus()[index];
 }
 
-enum class NodeType : int8_t {
+enum NodeType : int8_t {
   UNDEFINED = 0,
   ACTION = 1,
   CONDITION = 2,
   CONTROL = 3,
   DECORATOR = 4,
-  SUBTREE = 5,
-  MIN = UNDEFINED,
-  MAX = SUBTREE
+  SUBTREE = 5
 };
 
 inline const NodeType (&EnumValuesNodeType())[6] {
   static const NodeType values[] = {
-    NodeType::UNDEFINED,
-    NodeType::ACTION,
-    NodeType::CONDITION,
-    NodeType::CONTROL,
-    NodeType::DECORATOR,
-    NodeType::SUBTREE
+    UNDEFINED,
+    ACTION,
+    CONDITION,
+    CONTROL,
+    DECORATOR,
+    SUBTREE
   };
   return values;
 }
@@ -103,24 +112,22 @@ inline const char * const *EnumNamesNodeType() {
 }
 
 inline const char *EnumNameNodeType(NodeType e) {
-  if (flatbuffers::IsOutRange(e, NodeType::UNDEFINED, NodeType::SUBTREE)) return "";
+  if (flatbuffers::IsOutRange(e, UNDEFINED, SUBTREE)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesNodeType()[index];
 }
 
-enum class PortDirection : int8_t {
+enum PortDirection : int8_t {
   INPUT = 0,
   OUTPUT = 1,
-  INOUT = 2,
-  MIN = INPUT,
-  MAX = INOUT
+  INOUT = 2
 };
 
 inline const PortDirection (&EnumValuesPortDirection())[3] {
   static const PortDirection values[] = {
-    PortDirection::INPUT,
-    PortDirection::OUTPUT,
-    PortDirection::INOUT
+    INPUT,
+    OUTPUT,
+    INOUT
   };
   return values;
 }
@@ -136,7 +143,7 @@ inline const char * const *EnumNamesPortDirection() {
 }
 
 inline const char *EnumNamePortDirection(PortDirection e) {
-  if (flatbuffers::IsOutRange(e, PortDirection::INPUT, PortDirection::INOUT)) return "";
+  if (flatbuffers::IsOutRange(e, INPUT, INOUT)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesPortDirection()[index];
 }
@@ -146,6 +153,9 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) Timestamp FLATBUFFERS_FINAL_CLASS {
   uint64_t usec_since_epoch_;
 
  public:
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.Timestamp";
+  }
   Timestamp()
       : usec_since_epoch_(0) {
   }
@@ -155,51 +165,66 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) Timestamp FLATBUFFERS_FINAL_CLASS {
   uint64_t usec_since_epoch() const {
     return flatbuffers::EndianScalar(usec_since_epoch_);
   }
+  void mutate_usec_since_epoch(uint64_t _usec_since_epoch) {
+    flatbuffers::WriteScalar(&usec_since_epoch_, _usec_since_epoch);
+  }
 };
 FLATBUFFERS_STRUCT_END(Timestamp, 8);
 
-FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) StatusChange FLATBUFFERS_FINAL_CLASS {
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(2) CurrentNodeStatus FLATBUFFERS_FINAL_CLASS {
  private:
   uint16_t uid_;
-  int8_t prev_status_;
   int8_t status_;
-  int32_t padding0__;
-  Serialization::Timestamp timestamp_;
+  int8_t padding0__;
 
  public:
-  StatusChange()
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.CurrentNodeStatus";
+  }
+  CurrentNodeStatus()
       : uid_(0),
-        prev_status_(0),
         status_(0),
-        padding0__(0),
-        timestamp_() {
+        padding0__(0) {
     (void)padding0__;
   }
-  StatusChange(uint16_t _uid, Serialization::NodeStatus _prev_status, Serialization::NodeStatus _status, const Serialization::Timestamp &_timestamp)
+  CurrentNodeStatus(uint16_t _uid, Serialization::NodeStatus _status)
       : uid_(flatbuffers::EndianScalar(_uid)),
-        prev_status_(flatbuffers::EndianScalar(static_cast<int8_t>(_prev_status))),
         status_(flatbuffers::EndianScalar(static_cast<int8_t>(_status))),
-        padding0__(0),
-        timestamp_(_timestamp) {
+        padding0__(0) {
     (void)padding0__;
   }
   uint16_t uid() const {
     return flatbuffers::EndianScalar(uid_);
   }
-  Serialization::NodeStatus prev_status() const {
-    return static_cast<Serialization::NodeStatus>(flatbuffers::EndianScalar(prev_status_));
+  void mutate_uid(uint16_t _uid) {
+    flatbuffers::WriteScalar(&uid_, _uid);
   }
   Serialization::NodeStatus status() const {
     return static_cast<Serialization::NodeStatus>(flatbuffers::EndianScalar(status_));
   }
-  const Serialization::Timestamp &timestamp() const {
-    return timestamp_;
+  void mutate_status(Serialization::NodeStatus _status) {
+    flatbuffers::WriteScalar(&status_, static_cast<int8_t>(_status));
   }
 };
-FLATBUFFERS_STRUCT_END(StatusChange, 16);
+FLATBUFFERS_STRUCT_END(CurrentNodeStatus, 4);
+
+struct PortModelT : public flatbuffers::NativeTable {
+  typedef PortModel TableType;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.PortModelT";
+  }
+  std::string port_name{};
+  Serialization::PortDirection direction = Serialization::INPUT;
+  std::string type_info{};
+  std::string description{};
+};
 
 struct PortModel FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef PortModelT NativeTableType;
   typedef PortModelBuilder Builder;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.PortModel";
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PORT_NAME = 4,
     VT_DIRECTION = 6,
@@ -209,26 +234,41 @@ struct PortModel FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::String *port_name() const {
     return GetPointer<const flatbuffers::String *>(VT_PORT_NAME);
   }
+  flatbuffers::String *mutable_port_name() {
+    return GetPointer<flatbuffers::String *>(VT_PORT_NAME);
+  }
   Serialization::PortDirection direction() const {
     return static_cast<Serialization::PortDirection>(GetField<int8_t>(VT_DIRECTION, 0));
+  }
+  bool mutate_direction(Serialization::PortDirection _direction = static_cast<Serialization::PortDirection>(0)) {
+    return SetField<int8_t>(VT_DIRECTION, static_cast<int8_t>(_direction), 0);
   }
   const flatbuffers::String *type_info() const {
     return GetPointer<const flatbuffers::String *>(VT_TYPE_INFO);
   }
+  flatbuffers::String *mutable_type_info() {
+    return GetPointer<flatbuffers::String *>(VT_TYPE_INFO);
+  }
   const flatbuffers::String *description() const {
     return GetPointer<const flatbuffers::String *>(VT_DESCRIPTION);
+  }
+  flatbuffers::String *mutable_description() {
+    return GetPointer<flatbuffers::String *>(VT_DESCRIPTION);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PORT_NAME) &&
            verifier.VerifyString(port_name()) &&
-           VerifyField<int8_t>(verifier, VT_DIRECTION) &&
+           VerifyField<int8_t>(verifier, VT_DIRECTION, 1) &&
            VerifyOffset(verifier, VT_TYPE_INFO) &&
            verifier.VerifyString(type_info()) &&
            VerifyOffset(verifier, VT_DESCRIPTION) &&
            verifier.VerifyString(description()) &&
            verifier.EndTable();
   }
+  PortModelT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(PortModelT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<PortModel> Pack(flatbuffers::FlatBufferBuilder &_fbb, const PortModelT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
 struct PortModelBuilder {
@@ -261,7 +301,7 @@ struct PortModelBuilder {
 inline flatbuffers::Offset<PortModel> CreatePortModel(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::String> port_name = 0,
-    Serialization::PortDirection direction = Serialization::PortDirection::INPUT,
+    Serialization::PortDirection direction = Serialization::INPUT,
     flatbuffers::Offset<flatbuffers::String> type_info = 0,
     flatbuffers::Offset<flatbuffers::String> description = 0) {
   PortModelBuilder builder_(_fbb);
@@ -275,7 +315,7 @@ inline flatbuffers::Offset<PortModel> CreatePortModel(
 inline flatbuffers::Offset<PortModel> CreatePortModelDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *port_name = nullptr,
-    Serialization::PortDirection direction = Serialization::PortDirection::INPUT,
+    Serialization::PortDirection direction = Serialization::INPUT,
     const char *type_info = nullptr,
     const char *description = nullptr) {
   auto port_name__ = port_name ? _fbb.CreateString(port_name) : 0;
@@ -289,8 +329,23 @@ inline flatbuffers::Offset<PortModel> CreatePortModelDirect(
       description__);
 }
 
+flatbuffers::Offset<PortModel> CreatePortModel(flatbuffers::FlatBufferBuilder &_fbb, const PortModelT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct PortConfigT : public flatbuffers::NativeTable {
+  typedef PortConfig TableType;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.PortConfigT";
+  }
+  std::string port_name{};
+  std::string remap{};
+};
+
 struct PortConfig FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef PortConfigT NativeTableType;
   typedef PortConfigBuilder Builder;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.PortConfig";
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PORT_NAME = 4,
     VT_REMAP = 6
@@ -298,8 +353,14 @@ struct PortConfig FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::String *port_name() const {
     return GetPointer<const flatbuffers::String *>(VT_PORT_NAME);
   }
+  flatbuffers::String *mutable_port_name() {
+    return GetPointer<flatbuffers::String *>(VT_PORT_NAME);
+  }
   const flatbuffers::String *remap() const {
     return GetPointer<const flatbuffers::String *>(VT_REMAP);
+  }
+  flatbuffers::String *mutable_remap() {
+    return GetPointer<flatbuffers::String *>(VT_REMAP);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -309,6 +370,9 @@ struct PortConfig FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyString(remap()) &&
            verifier.EndTable();
   }
+  PortConfigT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(PortConfigT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<PortConfig> Pack(flatbuffers::FlatBufferBuilder &_fbb, const PortConfigT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
 struct PortConfigBuilder {
@@ -354,8 +418,31 @@ inline flatbuffers::Offset<PortConfig> CreatePortConfigDirect(
       remap__);
 }
 
+flatbuffers::Offset<PortConfig> CreatePortConfig(flatbuffers::FlatBufferBuilder &_fbb, const PortConfigT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct TreeNodeT : public flatbuffers::NativeTable {
+  typedef TreeNode TableType;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.TreeNodeT";
+  }
+  uint16_t uid = 0;
+  std::vector<uint16_t> children_uid{};
+  Serialization::NodeStatus status = Serialization::IDLE;
+  std::string instance_name{};
+  std::string registration_name{};
+  std::vector<std::unique_ptr<Serialization::PortConfigT>> port_remaps{};
+  TreeNodeT() = default;
+  TreeNodeT(const TreeNodeT &o);
+  TreeNodeT(TreeNodeT&&) FLATBUFFERS_NOEXCEPT = default;
+  TreeNodeT &operator=(TreeNodeT o) FLATBUFFERS_NOEXCEPT;
+};
+
 struct TreeNode FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef TreeNodeT NativeTableType;
   typedef TreeNodeBuilder Builder;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.TreeNode";
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UID = 4,
     VT_CHILDREN_UID = 6,
@@ -367,27 +454,45 @@ struct TreeNode FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   uint16_t uid() const {
     return GetField<uint16_t>(VT_UID, 0);
   }
+  bool mutate_uid(uint16_t _uid = 0) {
+    return SetField<uint16_t>(VT_UID, _uid, 0);
+  }
   const flatbuffers::Vector<uint16_t> *children_uid() const {
     return GetPointer<const flatbuffers::Vector<uint16_t> *>(VT_CHILDREN_UID);
+  }
+  flatbuffers::Vector<uint16_t> *mutable_children_uid() {
+    return GetPointer<flatbuffers::Vector<uint16_t> *>(VT_CHILDREN_UID);
   }
   Serialization::NodeStatus status() const {
     return static_cast<Serialization::NodeStatus>(GetField<int8_t>(VT_STATUS, 0));
   }
+  bool mutate_status(Serialization::NodeStatus _status = static_cast<Serialization::NodeStatus>(0)) {
+    return SetField<int8_t>(VT_STATUS, static_cast<int8_t>(_status), 0);
+  }
   const flatbuffers::String *instance_name() const {
     return GetPointer<const flatbuffers::String *>(VT_INSTANCE_NAME);
+  }
+  flatbuffers::String *mutable_instance_name() {
+    return GetPointer<flatbuffers::String *>(VT_INSTANCE_NAME);
   }
   const flatbuffers::String *registration_name() const {
     return GetPointer<const flatbuffers::String *>(VT_REGISTRATION_NAME);
   }
+  flatbuffers::String *mutable_registration_name() {
+    return GetPointer<flatbuffers::String *>(VT_REGISTRATION_NAME);
+  }
   const flatbuffers::Vector<flatbuffers::Offset<Serialization::PortConfig>> *port_remaps() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Serialization::PortConfig>> *>(VT_PORT_REMAPS);
   }
+  flatbuffers::Vector<flatbuffers::Offset<Serialization::PortConfig>> *mutable_port_remaps() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Serialization::PortConfig>> *>(VT_PORT_REMAPS);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint16_t>(verifier, VT_UID) &&
+           VerifyField<uint16_t>(verifier, VT_UID, 2) &&
            VerifyOffset(verifier, VT_CHILDREN_UID) &&
            verifier.VerifyVector(children_uid()) &&
-           VerifyField<int8_t>(verifier, VT_STATUS) &&
+           VerifyField<int8_t>(verifier, VT_STATUS, 1) &&
            VerifyOffsetRequired(verifier, VT_INSTANCE_NAME) &&
            verifier.VerifyString(instance_name()) &&
            VerifyOffsetRequired(verifier, VT_REGISTRATION_NAME) &&
@@ -397,6 +502,9 @@ struct TreeNode FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyVectorOfTables(port_remaps()) &&
            verifier.EndTable();
   }
+  TreeNodeT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(TreeNodeT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<TreeNode> Pack(flatbuffers::FlatBufferBuilder &_fbb, const TreeNodeT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
 struct TreeNodeBuilder {
@@ -438,7 +546,7 @@ inline flatbuffers::Offset<TreeNode> CreateTreeNode(
     flatbuffers::FlatBufferBuilder &_fbb,
     uint16_t uid = 0,
     flatbuffers::Offset<flatbuffers::Vector<uint16_t>> children_uid = 0,
-    Serialization::NodeStatus status = Serialization::NodeStatus::IDLE,
+    Serialization::NodeStatus status = Serialization::IDLE,
     flatbuffers::Offset<flatbuffers::String> instance_name = 0,
     flatbuffers::Offset<flatbuffers::String> registration_name = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Serialization::PortConfig>>> port_remaps = 0) {
@@ -456,7 +564,7 @@ inline flatbuffers::Offset<TreeNode> CreateTreeNodeDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     uint16_t uid = 0,
     const std::vector<uint16_t> *children_uid = nullptr,
-    Serialization::NodeStatus status = Serialization::NodeStatus::IDLE,
+    Serialization::NodeStatus status = Serialization::IDLE,
     const char *instance_name = nullptr,
     const char *registration_name = nullptr,
     const std::vector<flatbuffers::Offset<Serialization::PortConfig>> *port_remaps = nullptr) {
@@ -474,8 +582,28 @@ inline flatbuffers::Offset<TreeNode> CreateTreeNodeDirect(
       port_remaps__);
 }
 
+flatbuffers::Offset<TreeNode> CreateTreeNode(flatbuffers::FlatBufferBuilder &_fbb, const TreeNodeT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct NodeModelT : public flatbuffers::NativeTable {
+  typedef NodeModel TableType;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.NodeModelT";
+  }
+  std::string registration_name{};
+  Serialization::NodeType type = Serialization::UNDEFINED;
+  std::vector<std::unique_ptr<Serialization::PortModelT>> ports{};
+  NodeModelT() = default;
+  NodeModelT(const NodeModelT &o);
+  NodeModelT(NodeModelT&&) FLATBUFFERS_NOEXCEPT = default;
+  NodeModelT &operator=(NodeModelT o) FLATBUFFERS_NOEXCEPT;
+};
+
 struct NodeModel FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef NodeModelT NativeTableType;
   typedef NodeModelBuilder Builder;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.NodeModel";
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_REGISTRATION_NAME = 4,
     VT_TYPE = 6,
@@ -484,22 +612,34 @@ struct NodeModel FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::String *registration_name() const {
     return GetPointer<const flatbuffers::String *>(VT_REGISTRATION_NAME);
   }
+  flatbuffers::String *mutable_registration_name() {
+    return GetPointer<flatbuffers::String *>(VT_REGISTRATION_NAME);
+  }
   Serialization::NodeType type() const {
     return static_cast<Serialization::NodeType>(GetField<int8_t>(VT_TYPE, 0));
   }
+  bool mutate_type(Serialization::NodeType _type = static_cast<Serialization::NodeType>(0)) {
+    return SetField<int8_t>(VT_TYPE, static_cast<int8_t>(_type), 0);
+  }
   const flatbuffers::Vector<flatbuffers::Offset<Serialization::PortModel>> *ports() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Serialization::PortModel>> *>(VT_PORTS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Serialization::PortModel>> *mutable_ports() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Serialization::PortModel>> *>(VT_PORTS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffsetRequired(verifier, VT_REGISTRATION_NAME) &&
            verifier.VerifyString(registration_name()) &&
-           VerifyField<int8_t>(verifier, VT_TYPE) &&
+           VerifyField<int8_t>(verifier, VT_TYPE, 1) &&
            VerifyOffset(verifier, VT_PORTS) &&
            verifier.VerifyVector(ports()) &&
            verifier.VerifyVectorOfTables(ports()) &&
            verifier.EndTable();
   }
+  NodeModelT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(NodeModelT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<NodeModel> Pack(flatbuffers::FlatBufferBuilder &_fbb, const NodeModelT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
 struct NodeModelBuilder {
@@ -530,7 +670,7 @@ struct NodeModelBuilder {
 inline flatbuffers::Offset<NodeModel> CreateNodeModel(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::String> registration_name = 0,
-    Serialization::NodeType type = Serialization::NodeType::UNDEFINED,
+    Serialization::NodeType type = Serialization::UNDEFINED,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Serialization::PortModel>>> ports = 0) {
   NodeModelBuilder builder_(_fbb);
   builder_.add_ports(ports);
@@ -542,7 +682,7 @@ inline flatbuffers::Offset<NodeModel> CreateNodeModel(
 inline flatbuffers::Offset<NodeModel> CreateNodeModelDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *registration_name = nullptr,
-    Serialization::NodeType type = Serialization::NodeType::UNDEFINED,
+    Serialization::NodeType type = Serialization::UNDEFINED,
     const std::vector<flatbuffers::Offset<Serialization::PortModel>> *ports = nullptr) {
   auto registration_name__ = registration_name ? _fbb.CreateString(registration_name) : 0;
   auto ports__ = ports ? _fbb.CreateVector<flatbuffers::Offset<Serialization::PortModel>>(*ports) : 0;
@@ -553,8 +693,28 @@ inline flatbuffers::Offset<NodeModel> CreateNodeModelDirect(
       ports__);
 }
 
+flatbuffers::Offset<NodeModel> CreateNodeModel(flatbuffers::FlatBufferBuilder &_fbb, const NodeModelT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct BehaviorTreeT : public flatbuffers::NativeTable {
+  typedef BehaviorTree TableType;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.BehaviorTreeT";
+  }
+  uint16_t root_uid = 0;
+  std::vector<std::unique_ptr<Serialization::TreeNodeT>> nodes{};
+  std::vector<std::unique_ptr<Serialization::NodeModelT>> node_models{};
+  BehaviorTreeT() = default;
+  BehaviorTreeT(const BehaviorTreeT &o);
+  BehaviorTreeT(BehaviorTreeT&&) FLATBUFFERS_NOEXCEPT = default;
+  BehaviorTreeT &operator=(BehaviorTreeT o) FLATBUFFERS_NOEXCEPT;
+};
+
 struct BehaviorTree FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef BehaviorTreeT NativeTableType;
   typedef BehaviorTreeBuilder Builder;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.BehaviorTree";
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ROOT_UID = 4,
     VT_NODES = 6,
@@ -563,15 +723,24 @@ struct BehaviorTree FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   uint16_t root_uid() const {
     return GetField<uint16_t>(VT_ROOT_UID, 0);
   }
+  bool mutate_root_uid(uint16_t _root_uid = 0) {
+    return SetField<uint16_t>(VT_ROOT_UID, _root_uid, 0);
+  }
   const flatbuffers::Vector<flatbuffers::Offset<Serialization::TreeNode>> *nodes() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Serialization::TreeNode>> *>(VT_NODES);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Serialization::TreeNode>> *mutable_nodes() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Serialization::TreeNode>> *>(VT_NODES);
   }
   const flatbuffers::Vector<flatbuffers::Offset<Serialization::NodeModel>> *node_models() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Serialization::NodeModel>> *>(VT_NODE_MODELS);
   }
+  flatbuffers::Vector<flatbuffers::Offset<Serialization::NodeModel>> *mutable_node_models() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Serialization::NodeModel>> *>(VT_NODE_MODELS);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint16_t>(verifier, VT_ROOT_UID) &&
+           VerifyField<uint16_t>(verifier, VT_ROOT_UID, 2) &&
            VerifyOffset(verifier, VT_NODES) &&
            verifier.VerifyVector(nodes()) &&
            verifier.VerifyVectorOfTables(nodes()) &&
@@ -580,6 +749,9 @@ struct BehaviorTree FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyVectorOfTables(node_models()) &&
            verifier.EndTable();
   }
+  BehaviorTreeT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(BehaviorTreeT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<BehaviorTree> Pack(flatbuffers::FlatBufferBuilder &_fbb, const BehaviorTreeT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
 struct BehaviorTreeBuilder {
@@ -632,68 +804,355 @@ inline flatbuffers::Offset<BehaviorTree> CreateBehaviorTreeDirect(
       node_models__);
 }
 
-struct StatusChangeLog FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  typedef StatusChangeLogBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_BEHAVIOR_TREE = 4,
-    VT_STATE_CHANGES = 6
-  };
-  const Serialization::BehaviorTree *behavior_tree() const {
-    return GetPointer<const Serialization::BehaviorTree *>(VT_BEHAVIOR_TREE);
+flatbuffers::Offset<BehaviorTree> CreateBehaviorTree(flatbuffers::FlatBufferBuilder &_fbb, const BehaviorTreeT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct TreeStatusT : public flatbuffers::NativeTable {
+  typedef TreeStatus TableType;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.TreeStatusT";
   }
-  const flatbuffers::Vector<const Serialization::StatusChange *> *state_changes() const {
-    return GetPointer<const flatbuffers::Vector<const Serialization::StatusChange *> *>(VT_STATE_CHANGES);
+  std::unique_ptr<Serialization::Timestamp> timestamp{};
+  std::vector<Serialization::CurrentNodeStatus> node_status{};
+  TreeStatusT() = default;
+  TreeStatusT(const TreeStatusT &o);
+  TreeStatusT(TreeStatusT&&) FLATBUFFERS_NOEXCEPT = default;
+  TreeStatusT &operator=(TreeStatusT o) FLATBUFFERS_NOEXCEPT;
+};
+
+struct TreeStatus FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef TreeStatusT NativeTableType;
+  typedef TreeStatusBuilder Builder;
+  static FLATBUFFERS_CONSTEXPR_CPP11 const char *GetFullyQualifiedName() {
+    return "Serialization.TreeStatus";
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_TIMESTAMP = 4,
+    VT_NODE_STATUS = 6
+  };
+  const Serialization::Timestamp *timestamp() const {
+    return GetStruct<const Serialization::Timestamp *>(VT_TIMESTAMP);
+  }
+  Serialization::Timestamp *mutable_timestamp() {
+    return GetStruct<Serialization::Timestamp *>(VT_TIMESTAMP);
+  }
+  const flatbuffers::Vector<const Serialization::CurrentNodeStatus *> *node_status() const {
+    return GetPointer<const flatbuffers::Vector<const Serialization::CurrentNodeStatus *> *>(VT_NODE_STATUS);
+  }
+  flatbuffers::Vector<const Serialization::CurrentNodeStatus *> *mutable_node_status() {
+    return GetPointer<flatbuffers::Vector<const Serialization::CurrentNodeStatus *> *>(VT_NODE_STATUS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_BEHAVIOR_TREE) &&
-           verifier.VerifyTable(behavior_tree()) &&
-           VerifyOffset(verifier, VT_STATE_CHANGES) &&
-           verifier.VerifyVector(state_changes()) &&
+           VerifyField<Serialization::Timestamp>(verifier, VT_TIMESTAMP, 8) &&
+           VerifyOffset(verifier, VT_NODE_STATUS) &&
+           verifier.VerifyVector(node_status()) &&
            verifier.EndTable();
   }
+  TreeStatusT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(TreeStatusT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<TreeStatus> Pack(flatbuffers::FlatBufferBuilder &_fbb, const TreeStatusT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
-struct StatusChangeLogBuilder {
-  typedef StatusChangeLog Table;
+struct TreeStatusBuilder {
+  typedef TreeStatus Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_behavior_tree(flatbuffers::Offset<Serialization::BehaviorTree> behavior_tree) {
-    fbb_.AddOffset(StatusChangeLog::VT_BEHAVIOR_TREE, behavior_tree);
+  void add_timestamp(const Serialization::Timestamp *timestamp) {
+    fbb_.AddStruct(TreeStatus::VT_TIMESTAMP, timestamp);
   }
-  void add_state_changes(flatbuffers::Offset<flatbuffers::Vector<const Serialization::StatusChange *>> state_changes) {
-    fbb_.AddOffset(StatusChangeLog::VT_STATE_CHANGES, state_changes);
+  void add_node_status(flatbuffers::Offset<flatbuffers::Vector<const Serialization::CurrentNodeStatus *>> node_status) {
+    fbb_.AddOffset(TreeStatus::VT_NODE_STATUS, node_status);
   }
-  explicit StatusChangeLogBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit TreeStatusBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<StatusChangeLog> Finish() {
+  flatbuffers::Offset<TreeStatus> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<StatusChangeLog>(end);
+    auto o = flatbuffers::Offset<TreeStatus>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<StatusChangeLog> CreateStatusChangeLog(
+inline flatbuffers::Offset<TreeStatus> CreateTreeStatus(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<Serialization::BehaviorTree> behavior_tree = 0,
-    flatbuffers::Offset<flatbuffers::Vector<const Serialization::StatusChange *>> state_changes = 0) {
-  StatusChangeLogBuilder builder_(_fbb);
-  builder_.add_state_changes(state_changes);
-  builder_.add_behavior_tree(behavior_tree);
+    const Serialization::Timestamp *timestamp = nullptr,
+    flatbuffers::Offset<flatbuffers::Vector<const Serialization::CurrentNodeStatus *>> node_status = 0) {
+  TreeStatusBuilder builder_(_fbb);
+  builder_.add_node_status(node_status);
+  builder_.add_timestamp(timestamp);
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<StatusChangeLog> CreateStatusChangeLogDirect(
+inline flatbuffers::Offset<TreeStatus> CreateTreeStatusDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<Serialization::BehaviorTree> behavior_tree = 0,
-    const std::vector<Serialization::StatusChange> *state_changes = nullptr) {
-  auto state_changes__ = state_changes ? _fbb.CreateVectorOfStructs<Serialization::StatusChange>(*state_changes) : 0;
-  return Serialization::CreateStatusChangeLog(
+    const Serialization::Timestamp *timestamp = nullptr,
+    const std::vector<Serialization::CurrentNodeStatus> *node_status = nullptr) {
+  auto node_status__ = node_status ? _fbb.CreateVectorOfStructs<Serialization::CurrentNodeStatus>(*node_status) : 0;
+  return Serialization::CreateTreeStatus(
       _fbb,
-      behavior_tree,
-      state_changes__);
+      timestamp,
+      node_status__);
+}
+
+flatbuffers::Offset<TreeStatus> CreateTreeStatus(flatbuffers::FlatBufferBuilder &_fbb, const TreeStatusT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+inline PortModelT *PortModel::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<PortModelT>(new PortModelT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void PortModel::UnPackTo(PortModelT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = port_name(); if (_e) _o->port_name = _e->str(); }
+  { auto _e = direction(); _o->direction = _e; }
+  { auto _e = type_info(); if (_e) _o->type_info = _e->str(); }
+  { auto _e = description(); if (_e) _o->description = _e->str(); }
+}
+
+inline flatbuffers::Offset<PortModel> PortModel::Pack(flatbuffers::FlatBufferBuilder &_fbb, const PortModelT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreatePortModel(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<PortModel> CreatePortModel(flatbuffers::FlatBufferBuilder &_fbb, const PortModelT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const PortModelT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _port_name = _o->port_name.empty() ? 0 : _fbb.CreateString(_o->port_name);
+  auto _direction = _o->direction;
+  auto _type_info = _o->type_info.empty() ? 0 : _fbb.CreateString(_o->type_info);
+  auto _description = _o->description.empty() ? 0 : _fbb.CreateString(_o->description);
+  return Serialization::CreatePortModel(
+      _fbb,
+      _port_name,
+      _direction,
+      _type_info,
+      _description);
+}
+
+inline PortConfigT *PortConfig::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<PortConfigT>(new PortConfigT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void PortConfig::UnPackTo(PortConfigT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = port_name(); if (_e) _o->port_name = _e->str(); }
+  { auto _e = remap(); if (_e) _o->remap = _e->str(); }
+}
+
+inline flatbuffers::Offset<PortConfig> PortConfig::Pack(flatbuffers::FlatBufferBuilder &_fbb, const PortConfigT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreatePortConfig(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<PortConfig> CreatePortConfig(flatbuffers::FlatBufferBuilder &_fbb, const PortConfigT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const PortConfigT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _port_name = _o->port_name.empty() ? 0 : _fbb.CreateString(_o->port_name);
+  auto _remap = _o->remap.empty() ? 0 : _fbb.CreateString(_o->remap);
+  return Serialization::CreatePortConfig(
+      _fbb,
+      _port_name,
+      _remap);
+}
+
+inline TreeNodeT::TreeNodeT(const TreeNodeT &o)
+      : uid(o.uid),
+        children_uid(o.children_uid),
+        status(o.status),
+        instance_name(o.instance_name),
+        registration_name(o.registration_name) {
+  port_remaps.reserve(o.port_remaps.size());
+  for (const auto &port_remaps_ : o.port_remaps) { port_remaps.emplace_back((port_remaps_) ? new Serialization::PortConfigT(*port_remaps_) : nullptr); }
+}
+
+inline TreeNodeT &TreeNodeT::operator=(TreeNodeT o) FLATBUFFERS_NOEXCEPT {
+  std::swap(uid, o.uid);
+  std::swap(children_uid, o.children_uid);
+  std::swap(status, o.status);
+  std::swap(instance_name, o.instance_name);
+  std::swap(registration_name, o.registration_name);
+  std::swap(port_remaps, o.port_remaps);
+  return *this;
+}
+
+inline TreeNodeT *TreeNode::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<TreeNodeT>(new TreeNodeT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void TreeNode::UnPackTo(TreeNodeT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = uid(); _o->uid = _e; }
+  { auto _e = children_uid(); if (_e) { _o->children_uid.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->children_uid[_i] = _e->Get(_i); } } }
+  { auto _e = status(); _o->status = _e; }
+  { auto _e = instance_name(); if (_e) _o->instance_name = _e->str(); }
+  { auto _e = registration_name(); if (_e) _o->registration_name = _e->str(); }
+  { auto _e = port_remaps(); if (_e) { _o->port_remaps.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->port_remaps[_i]) { _e->Get(_i)->UnPackTo(_o->port_remaps[_i].get(), _resolver); } else { _o->port_remaps[_i] = std::unique_ptr<Serialization::PortConfigT>(_e->Get(_i)->UnPack(_resolver)); }; } } }
+}
+
+inline flatbuffers::Offset<TreeNode> TreeNode::Pack(flatbuffers::FlatBufferBuilder &_fbb, const TreeNodeT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateTreeNode(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<TreeNode> CreateTreeNode(flatbuffers::FlatBufferBuilder &_fbb, const TreeNodeT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const TreeNodeT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _uid = _o->uid;
+  auto _children_uid = _o->children_uid.size() ? _fbb.CreateVector(_o->children_uid) : 0;
+  auto _status = _o->status;
+  auto _instance_name = _fbb.CreateString(_o->instance_name);
+  auto _registration_name = _fbb.CreateString(_o->registration_name);
+  auto _port_remaps = _o->port_remaps.size() ? _fbb.CreateVector<flatbuffers::Offset<Serialization::PortConfig>> (_o->port_remaps.size(), [](size_t i, _VectorArgs *__va) { return CreatePortConfig(*__va->__fbb, __va->__o->port_remaps[i].get(), __va->__rehasher); }, &_va ) : 0;
+  return Serialization::CreateTreeNode(
+      _fbb,
+      _uid,
+      _children_uid,
+      _status,
+      _instance_name,
+      _registration_name,
+      _port_remaps);
+}
+
+inline NodeModelT::NodeModelT(const NodeModelT &o)
+      : registration_name(o.registration_name),
+        type(o.type) {
+  ports.reserve(o.ports.size());
+  for (const auto &ports_ : o.ports) { ports.emplace_back((ports_) ? new Serialization::PortModelT(*ports_) : nullptr); }
+}
+
+inline NodeModelT &NodeModelT::operator=(NodeModelT o) FLATBUFFERS_NOEXCEPT {
+  std::swap(registration_name, o.registration_name);
+  std::swap(type, o.type);
+  std::swap(ports, o.ports);
+  return *this;
+}
+
+inline NodeModelT *NodeModel::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<NodeModelT>(new NodeModelT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void NodeModel::UnPackTo(NodeModelT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = registration_name(); if (_e) _o->registration_name = _e->str(); }
+  { auto _e = type(); _o->type = _e; }
+  { auto _e = ports(); if (_e) { _o->ports.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->ports[_i]) { _e->Get(_i)->UnPackTo(_o->ports[_i].get(), _resolver); } else { _o->ports[_i] = std::unique_ptr<Serialization::PortModelT>(_e->Get(_i)->UnPack(_resolver)); }; } } }
+}
+
+inline flatbuffers::Offset<NodeModel> NodeModel::Pack(flatbuffers::FlatBufferBuilder &_fbb, const NodeModelT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateNodeModel(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<NodeModel> CreateNodeModel(flatbuffers::FlatBufferBuilder &_fbb, const NodeModelT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const NodeModelT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _registration_name = _fbb.CreateString(_o->registration_name);
+  auto _type = _o->type;
+  auto _ports = _o->ports.size() ? _fbb.CreateVector<flatbuffers::Offset<Serialization::PortModel>> (_o->ports.size(), [](size_t i, _VectorArgs *__va) { return CreatePortModel(*__va->__fbb, __va->__o->ports[i].get(), __va->__rehasher); }, &_va ) : 0;
+  return Serialization::CreateNodeModel(
+      _fbb,
+      _registration_name,
+      _type,
+      _ports);
+}
+
+inline BehaviorTreeT::BehaviorTreeT(const BehaviorTreeT &o)
+      : root_uid(o.root_uid) {
+  nodes.reserve(o.nodes.size());
+  for (const auto &nodes_ : o.nodes) { nodes.emplace_back((nodes_) ? new Serialization::TreeNodeT(*nodes_) : nullptr); }
+  node_models.reserve(o.node_models.size());
+  for (const auto &node_models_ : o.node_models) { node_models.emplace_back((node_models_) ? new Serialization::NodeModelT(*node_models_) : nullptr); }
+}
+
+inline BehaviorTreeT &BehaviorTreeT::operator=(BehaviorTreeT o) FLATBUFFERS_NOEXCEPT {
+  std::swap(root_uid, o.root_uid);
+  std::swap(nodes, o.nodes);
+  std::swap(node_models, o.node_models);
+  return *this;
+}
+
+inline BehaviorTreeT *BehaviorTree::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<BehaviorTreeT>(new BehaviorTreeT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void BehaviorTree::UnPackTo(BehaviorTreeT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = root_uid(); _o->root_uid = _e; }
+  { auto _e = nodes(); if (_e) { _o->nodes.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->nodes[_i]) { _e->Get(_i)->UnPackTo(_o->nodes[_i].get(), _resolver); } else { _o->nodes[_i] = std::unique_ptr<Serialization::TreeNodeT>(_e->Get(_i)->UnPack(_resolver)); }; } } }
+  { auto _e = node_models(); if (_e) { _o->node_models.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->node_models[_i]) { _e->Get(_i)->UnPackTo(_o->node_models[_i].get(), _resolver); } else { _o->node_models[_i] = std::unique_ptr<Serialization::NodeModelT>(_e->Get(_i)->UnPack(_resolver)); }; } } }
+}
+
+inline flatbuffers::Offset<BehaviorTree> BehaviorTree::Pack(flatbuffers::FlatBufferBuilder &_fbb, const BehaviorTreeT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateBehaviorTree(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<BehaviorTree> CreateBehaviorTree(flatbuffers::FlatBufferBuilder &_fbb, const BehaviorTreeT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const BehaviorTreeT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _root_uid = _o->root_uid;
+  auto _nodes = _o->nodes.size() ? _fbb.CreateVector<flatbuffers::Offset<Serialization::TreeNode>> (_o->nodes.size(), [](size_t i, _VectorArgs *__va) { return CreateTreeNode(*__va->__fbb, __va->__o->nodes[i].get(), __va->__rehasher); }, &_va ) : 0;
+  auto _node_models = _o->node_models.size() ? _fbb.CreateVector<flatbuffers::Offset<Serialization::NodeModel>> (_o->node_models.size(), [](size_t i, _VectorArgs *__va) { return CreateNodeModel(*__va->__fbb, __va->__o->node_models[i].get(), __va->__rehasher); }, &_va ) : 0;
+  return Serialization::CreateBehaviorTree(
+      _fbb,
+      _root_uid,
+      _nodes,
+      _node_models);
+}
+
+inline TreeStatusT::TreeStatusT(const TreeStatusT &o)
+      : timestamp((o.timestamp) ? new Serialization::Timestamp(*o.timestamp) : nullptr),
+        node_status(o.node_status) {
+}
+
+inline TreeStatusT &TreeStatusT::operator=(TreeStatusT o) FLATBUFFERS_NOEXCEPT {
+  std::swap(timestamp, o.timestamp);
+  std::swap(node_status, o.node_status);
+  return *this;
+}
+
+inline TreeStatusT *TreeStatus::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<TreeStatusT>(new TreeStatusT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void TreeStatus::UnPackTo(TreeStatusT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = timestamp(); if (_e) _o->timestamp = std::unique_ptr<Serialization::Timestamp>(new Serialization::Timestamp(*_e)); }
+  { auto _e = node_status(); if (_e) { _o->node_status.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->node_status[_i] = *_e->Get(_i); } } }
+}
+
+inline flatbuffers::Offset<TreeStatus> TreeStatus::Pack(flatbuffers::FlatBufferBuilder &_fbb, const TreeStatusT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateTreeStatus(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<TreeStatus> CreateTreeStatus(flatbuffers::FlatBufferBuilder &_fbb, const TreeStatusT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const TreeStatusT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _timestamp = _o->timestamp ? _o->timestamp.get() : nullptr;
+  auto _node_status = _o->node_status.size() ? _fbb.CreateVectorOfStructs(_o->node_status) : 0;
+  return Serialization::CreateTreeStatus(
+      _fbb,
+      _timestamp,
+      _node_status);
 }
 
 inline const Serialization::BehaviorTree *GetBehaviorTree(const void *buf) {
@@ -702,6 +1161,14 @@ inline const Serialization::BehaviorTree *GetBehaviorTree(const void *buf) {
 
 inline const Serialization::BehaviorTree *GetSizePrefixedBehaviorTree(const void *buf) {
   return flatbuffers::GetSizePrefixedRoot<Serialization::BehaviorTree>(buf);
+}
+
+inline BehaviorTree *GetMutableBehaviorTree(void *buf) {
+  return flatbuffers::GetMutableRoot<BehaviorTree>(buf);
+}
+
+inline Serialization::BehaviorTree *GetMutableSizePrefixedBehaviorTree(void *buf) {
+  return flatbuffers::GetMutableSizePrefixedRoot<Serialization::BehaviorTree>(buf);
 }
 
 inline bool VerifyBehaviorTreeBuffer(
@@ -724,6 +1191,18 @@ inline void FinishSizePrefixedBehaviorTreeBuffer(
     flatbuffers::FlatBufferBuilder &fbb,
     flatbuffers::Offset<Serialization::BehaviorTree> root) {
   fbb.FinishSizePrefixed(root);
+}
+
+inline std::unique_ptr<Serialization::BehaviorTreeT> UnPackBehaviorTree(
+    const void *buf,
+    const flatbuffers::resolver_function_t *res = nullptr) {
+  return std::unique_ptr<Serialization::BehaviorTreeT>(GetBehaviorTree(buf)->UnPack(res));
+}
+
+inline std::unique_ptr<Serialization::BehaviorTreeT> UnPackSizePrefixedBehaviorTree(
+    const void *buf,
+    const flatbuffers::resolver_function_t *res = nullptr) {
+  return std::unique_ptr<Serialization::BehaviorTreeT>(GetSizePrefixedBehaviorTree(buf)->UnPack(res));
 }
 
 }  // namespace Serialization
